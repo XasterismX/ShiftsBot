@@ -7,7 +7,6 @@ const sequelize = new Sequelize('test', process.env.DB_USER, process.env.DB_PASS
         port: process.env.DB_PORT
 
 });
-
 try {
     await sequelize.authenticate();
 
@@ -16,7 +15,6 @@ try {
 } catch (error) {
     console.error('Unable to connect to the database:', error);
 }
-
 const students = sequelize.define('students', {
     id:  {
         type: DataTypes.INTEGER,
