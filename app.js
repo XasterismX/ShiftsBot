@@ -14,7 +14,7 @@ const admins = [process.env.ADMIN_ID]
 
 
 bot.on('message', async (msg) => {
-    if (msg.text === '/add') {
+    if (msg.text === '/add' && msg.chat.id == admins) {
         bot.sendMessage(msg.chat.id, "Введите имя фамилию и день недели через пробел").then(res => {
 
             bot.on('message', (msg) => {
