@@ -37,7 +37,7 @@ if(msg.text === '/blanki'){
 
 }
     if(msg.text === '/all') {
-       const stud = await students.findAll({order: {'surname': 'ASC'}})
+       const stud = await students.findAll({order: ['surname', 'ASC']})
         let message = []
 
         for (const studKey in stud) {
