@@ -1,8 +1,9 @@
 import 'dotenv/config'
 import TelegramBot from "node-telegram-bot-api";
-import {sequelize} from './database.js'
+import {sequelize, students} from './database.js'
 import {AddStudent} from './StudentBd.js'
 import * as path from "path";
+import {json} from "sequelize";
 
 const token = process.env.T_TOKEN;
 const bot = new TelegramBot(token, {polling: true});
@@ -12,8 +13,8 @@ const admins = [process.env.ADMIN_ID]
 
 
 
-bot.on('message', (msg) => {
-    if (msg.text === '/add' && msg.from.id === admins[0]) {
+bot.on('message', async (msg) => {
+    if (msg.text === '/add') {
         bot.sendMessage(msg.chat.id, "Введите имя фамилию и день недели через пробел").then(res => {
 
             bot.on('message', (msg) => {
@@ -36,88 +37,35 @@ if(msg.text === '/blanki'){
 
 }
     if(msg.text === '/all') {
-        students.findAll({raw: true}).then(r => {
-            for (let i = 0; i < r.length; i++) {
+       const stud = await students.findAll()
+        let message = []
 
-                bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname}`)
-
-
-            }
-        })
-        if (msg.text === '/today') {
-            let nowDay = new Date().getDay()
-            switch (nowDay) {
-                case 1:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'понедельник'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-                    break;
-                case 2:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'Вторник'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-
-                    break;
-                case 3:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'Среда'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-                    break;
-                case 4:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'Четверг'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-                    break;
-                case 5:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'Пятница'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-                    break;
-                case 6:
-                    bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-                    students.findAll({raw: true, where: {date: 'Суббота'}}).then(r => {
-                        for (let i = 0; i < 4; i++) {
-
-                            bot.sendMessage(msg.chat.id, `${r[i].name} ${r[i].surname} `)
-
-
-                        }
-                    })
-                    break;
-            }
+        for (const studKey in stud) {
+                const {name, surname} = stud[studKey]
+            message.push((Number(studKey)+1) +') '+name +' '+ surname)
         }
 
-    }})
+        bot.sendMessage(msg.chat.id, `${message.join('\n')}`)
+        }
+        if (msg.text === '/today') {
+            let nowDay = new Date().getDay()
+            const days = {
+                1:'Понедельник',
+                2:'Вторник',
+                3: 'Среда',
+                4: 'Четверг',
+                5: 'Пятница',
+                6: 'Суббота',
+            }
+            bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
+            const {name, surname} = await students.findAll({raw: true, where: {date: days[nowDay]}})
+            bot.sendMessage(msg.chat.id, `${name} ${surname}`)
+
+
+            }
+
+
+    })
 
 
 // Запускаем бота
