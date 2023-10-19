@@ -57,9 +57,13 @@ if(msg.text === '/blanki'){
                 5: 'Пятница',
                 6: 'Суббота',
             }
-            bot.sendMessage(msg.chat.id, 'Сегодня дежурят: ')
-            const {name, surname} = await students.findAll({raw: true, where: {date: days[nowDay]}})
-            bot.sendMessage(msg.chat.id, `${name} ${surname}`)
+            const stud = await students.findAll({ where: {date: days[nowDay]}})
+            let message = []
+            for (const studKey in stud) {
+                const {name, surname} = stud[studKey]
+                message.push((Number(studKey)+1) +') '+name +' '+ surname)
+            }
+            bot.sendMessage(msg.chat.id, `Сегодня дежурят:\n${message.join('\n')}`)
 
 
             }
