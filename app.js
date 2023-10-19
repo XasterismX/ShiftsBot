@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import TelegramBot from "node-telegram-bot-api";
-import {AddStudent, students} from './database.js'
+import {sequelize} from './database.js'
+import {AddStudent} from './StudentBd.js'
 import * as path from "path";
 
 const token = process.env.T_TOKEN;
@@ -121,5 +122,7 @@ if(msg.text === '/blanki'){
 
 // Запускаем бота
 bot.on('polling_error', (error) => {
+    sequelize.authenticate()
+    sequelize.sync()
     console.log(error);
 })
