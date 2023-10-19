@@ -41,8 +41,8 @@ if(msg.text === '/blanki'){
         let message = []
 
         for (const studKey in stud) {
-                const {name, surname} = stud[studKey]
-            message.push((Number(studKey)+1) +') '+name +' '+ surname)
+                const {name, surname, date} = stud[studKey]
+            message.push((Number(studKey)+1) +') '+name +' '+ surname + ' - ' + date)
         }
 
         bot.sendMessage(msg.chat.id, `${message.join('\n')}`)
